@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "ss"
+version = "0.1.0"
+description = ""
+authors = ["Muhammed Kaplan <mmuhammedkaplan0@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+undetected-chromedriver = "^3.5.5"
+nodriver = "^0.29rc2"
+fastapi = "^0.111.0"
+
+
+[tool.poetry.group.dev.dependencies]
+setuptools = "^69.5.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
