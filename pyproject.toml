@@ -6,14 +6,20 @@ authors = ["Muhammed Kaplan <mmuhammedkaplan0@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.11"
 undetected-chromedriver = "^3.5.5"
 nodriver = "^0.29rc2"
 fastapi = "^0.111.0"
+sqlmodel = "^0.0.18"
+pydantic-settings = "^2.2.1"
+alembic = "^1.13.1"
+psycopg = "^3.1.19"
+redis = "^5.0.4"
 
 
 [tool.poetry.group.dev.dependencies]
 setuptools = "^69.5.1"
+autopep8 = "^2.1.0"
 
 [build-system]
 requires = ["poetry-core"]
