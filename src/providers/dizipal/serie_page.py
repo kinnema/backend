@@ -1,19 +1,22 @@
 import re
-from typing import List
+from typing import Dict, List
 
-from nodriver import Browser, Tab
+from nodriver import Tab
 
+from src.core.browser import init_browser
+from src.core.database import mongoEngine
 from src.core.redis import REDIS_KEYS, RedisProvider
-from src.models import GetSeriePage, SerieBase, SerieMetadata
-from src.providers import AvailableProviders
+from src.models import (
+    GetSeriePage,
+    SerieBase,
+    SerieMetadata,
+    SeriePageEpisode,
+    SeriePageModel,
+)
 
 
 class DizipalSeriePage:
-    def __init__(self, browser: Browser):
-        self.browser = browser
-
     async def get_serie_page(self, serie: str) -> GetSeriePage:
-        print(REDIS_KEYS.SERIE.value.format(serie=serie))
         return RedisProvider.get(
             REDIS_KEYS.SERIE.value.format(serie=serie), GetSeriePage
         ) or await self._get_serie_page(serie)
@@ -40,38 +43,50 @@ class DizipalSeriePage:
 
         return seasons
 
-    async def _get_episodes(self, page: Tab, serie: str) -> List[SerieBase]:
-        _episodes = await page.query_selector_all(".episodes .episode-item a")
-        episodes: List[SerieBase] = []
+    async def _get_episodes(
+        self, page: Tab, metadata: SerieMetadata, seasons: List[str]
+    ) -> SeriePageEpisode:
+        _seasons = await page.query_selector_all(".last-episodes .episodes")
+        _season_episodes: Dict[int, List[SerieBase]] = {}
+        season_num = 0
 
-        for episode in _episodes:
-            _image = await page.query_selector("img", _node=episode)
-            _date = await page.query_selector(".date", _node=episode)
-            _episode = await page.query_selector(".episode", _node=episode)
+        for season in _seasons:
+            season_num += 1
+            _episodes = await page.query_selector_all(".episode-item a", _node=season)
+            _season_episodes[season_num] = []
+            for episode in _episodes:
+                _episode = await page.query_selector(".episode", _node=episode)
+                _image = await page.query_selector("img", _node=episode)
+                _date = await page.query_selector(".date", _node=episode)
+                dict = SerieBase(
+                    href=episode.attrs.get("href"),
+                    image=_image.attrs.get("src"),  # type: ignore
+                    name=f"{_episode.text.strip()} - {_date.text.strip()}",  # type: ignore
+                    desc="metadata.desc",
+                    video_url="",
+                )
 
-            dict = SerieBase(
-                href=episode.attrs.get("href"),
-                image=_image.attrs.get("src"),  # type: ignore
-                name=f"{_episode.text.strip()} - {_date.text.strip()}",  # type: ignore
-                provider=AvailableProviders.DIZIPAL,
-            )
+                _season_episodes[season_num].append(dict)
 
-            episodes.append(dict)
-
-        return episodes
+        return SeriePageEpisode(episodes=_season_episodes)
 
     async def _get_serie_page(self, serie: str) -> GetSeriePage:
-        page = await self.browser.get(f"https://dizipal735.com/dizi/{serie}")
+        browser = await init_browser()
+        page = await browser.get(f"https://dizipal735.com/dizi/{serie}")
         await page.wait_for(".user-menu")
 
-        episodes = await self._get_episodes(page, serie)
-        seasons = await self._get_seasons(page)
         metadata = await self._get_metadata(page)
+        seasons = await self._get_seasons(page)
+        episodes = await self._get_episodes(page, metadata, seasons)
 
         await page.close()
 
         data = GetSeriePage(episodes=episodes, seasons=seasons, metadata=metadata)
 
         RedisProvider.set(REDIS_KEYS.SERIE.value.format(serie=serie), data)
+
+        await mongoEngine.save(
+            SeriePageModel(episodes=episodes, seasons=seasons, metadata=metadata)  # type: ignore
+        )
 
         return data

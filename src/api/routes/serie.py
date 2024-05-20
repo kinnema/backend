@@ -1,63 +1,50 @@
-from typing import List, Optional, Union
+from typing import Union
 
-import nodriver as uc
 from fastapi import APIRouter, HTTPException
 
-from src import crud
-from src.deps import BrowserDep, SessionDep
 from src.models import (
     GetHomeResults,
     GetSeriePage,
     GetSerieResult,
-    SerieBase,
-    SerieCreate,
-    SerieResults,
 )
 from src.providers.dizipal import Dizipal
 
 router = APIRouter()
 
 
-@router.get("/collection/{collection}")
-async def collection(
-    collection: str,
-    session: SessionDep,
-    browser: BrowserDep,
-    provider: Union[str, None] = None,
-) -> SerieResults:
-    if provider is None:
-        provider = "dizipal"
+# @router.get("/collection/{collection}")
+# async def collection(
+#     collection: str,
+#     provider: Union[str, None] = None,
+# ) -> SerieResults:
+#     if provider is None:
+#         provider = "dizipal"
 
-    async def get_() -> Optional[List[SerieBase]]:
-        if provider == "dizipal":
-            dizipal = Dizipal(browser)
-            series = await dizipal.collection(collection)
+#     async def get_() -> Optional[List[SerieBase]]:
+#         if provider == "dizipal":
+#             dizipal = Dizipal(browser)
+#             series = await dizipal.collection(collection)
 
-            for serie in series:
-                create_serie = SerieCreate(**serie, collection=collection)  # type: ignore
-                crud.create_serie(session=session, serie=create_serie)  # type: ignore
+#             return series
 
-            return series
+#         return None
 
-        return None
+#     collections = await get_()
 
-    collections = await get_()
+#     if collections is None:
+#         raise HTTPException(status_code=404, detail="Serie not found")
 
-    if collections is None:
-        raise HTTPException(status_code=404, detail="Serie not found")
-
-    return SerieResults(results=collections)
+#     return SerieResults(results=collections)
 
 
 @router.post("/search/{query}")
 async def search(query: str, provider: Union[str, None] = None):
-    browser = await uc.start()
     if provider is None:
         provider = "dizipal"
 
     async def get_():
         if provider == "dizipal":
-            dizipal = Dizipal(browser)
+            dizipal = Dizipal()
             return await dizipal.search(query)
 
         return None
@@ -67,22 +54,8 @@ async def search(query: str, provider: Union[str, None] = None):
 
 
 @router.get("/watch/{dizi}/{sezon}/{bolum}")
-async def get_serie(
-    dizi: str, sezon: int, bolum: int, provider: Union[str, None] = None
-) -> GetSerieResult:
-    browser = await uc.start()
-
-    if provider is None:
-        provider = "dizipal"
-
-    async def get_() -> Optional[str]:
-        if provider == "dizipal":
-            dizipal = Dizipal(browser)
-            return await dizipal.get_dizi(dizi, sezon, bolum)
-
-        return None
-
-    url = await get_()
+async def get_serie(dizi: str, sezon: int, bolum: int) -> GetSerieResult:
+    url = await Dizipal().get_dizi(dizi, sezon, bolum)
 
     if url is None:
         raise HTTPException(status_code=404, detail="Serie not found")
@@ -91,14 +64,14 @@ async def get_serie(
 
 
 @router.get("/home")
-async def get_home(browser: BrowserDep) -> GetHomeResults:
-    data = await Dizipal(browser).get_home()
+async def get_home() -> GetHomeResults:
+    data = await Dizipal().get_home()
 
     return data
 
 
 @router.get("/serie/{name}")
-async def get_serie_page(name: str, browser: BrowserDep) -> GetSeriePage:
-    data = await Dizipal.get_serie_page_instance(browser).get_serie_page(name)
+async def get_serie_page(name: str) -> GetSeriePage:
+    data = await Dizipal.get_serie_page_instance().get_serie_page(name)
 
     return data

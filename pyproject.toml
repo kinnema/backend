@@ -10,11 +10,10 @@ python = "^3.11"
 undetected-chromedriver = "^3.5.5"
 nodriver = "^0.29rc2"
 fastapi = "^0.111.0"
-sqlmodel = "^0.0.18"
 pydantic-settings = "^2.2.1"
-alembic = "^1.13.1"
-psycopg = "^3.1.19"
 redis = "^5.0.4"
+odmantic = "^1.0.2"
+aiohttp = "^3.9.5"
 
 
 [tool.poetry.group.dev.dependencies]

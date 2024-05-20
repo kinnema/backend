@@ -1,8 +1,11 @@
 import re
+from asyncio import sleep
 from typing import List, Optional
 
+import aiohttp
 from nodriver import Browser, Tab
 
+from src.core.browser import init_browser
 from src.core.redis import REDIS_KEYS, RedisProvider
 from src.models import GetHomeResults, HomeTrends, SerieBase
 from src.providers import AvailableProviders
@@ -11,22 +14,19 @@ from src.providers.dizipal.serie_page import DizipalSeriePage
 
 class Dizipal:
     @classmethod
-    def get_serie_page_instance(cls, browser: Browser) -> DizipalSeriePage:
+    def get_serie_page_instance(cls) -> DizipalSeriePage:
         """
         Create a DizipalSeriePage instance. This function is optimized for speed
         by using a class method instead of a static method.
         """
 
-        print(type(browser))
-        return DizipalSeriePage(browser)
-
-    def __init__(self, browser: Browser):
-        self.browser = browser
+        return DizipalSeriePage()
 
     async def get_home(self) -> GetHomeResults:
         return (
             RedisProvider.get(
                 REDIS_KEYS.HOME,
+                GetHomeResults,
             )
             or await self._get_home()
         )
@@ -36,21 +36,21 @@ class Dizipal:
 
     async def search(self, query: str) -> List[SerieBase]:
         series: List[SerieBase] = []
-        page = await self.browser.get(f"https://dizipal735.com/diziler?kelime={query}")
+        browser = await init_browser()
+
+        page = await browser.get(f"https://dizipal735.com/diziler?kelime={query}")
         await page.wait_for(".type2")
         all_series = await page.query_selector_all(".type2 ul li a")
 
         for serie in all_series:
             _image = await page.query_selector("img", _node=serie)
             name = await page.query_selector(".detail .title", _node=serie)
-            provider = AvailableProviders.DIZIPAL
             image = _image.attrs.get("src")  # type: ignore
             href = serie.attrs.get("href")
 
             dict = SerieBase(
                 name=name.text,  # type: ignore
                 image=image,  # type: ignore
-                provider=provider,
                 href=href,
             )
 
@@ -61,28 +61,30 @@ class Dizipal:
         return series
 
     async def get_dizi(self, dizi, sezon, bolum) -> Optional[str]:
-        self.dizi = dizi
-        self.sezon = sezon
-        self.bolum = bolum
+        browser = await init_browser()
+        url = f"https://dizipal735.com/dizi/{dizi}/sezon-{sezon}/bolum-{bolum}"
+        page = await browser.get(url)
 
-        page = await self.browser.get(
-            f"https://dizipal735.com/dizi/{dizi}/sezon-{sezon}/bolum-{bolum}"
-        )
         await page.wait_for(".user-menu")
         iframe = await page.query_selector("div#vast_new iframe")
         iframe_source = iframe.attrs.get("src")  # type: ignore
-        iframe_browser = await self.browser.get(iframe_source)  # type: ignore
-        page_content = await iframe_browser.get_content()
 
-        x = re.findall(r"file:\"([^\"]+)", page_content)
+        async with aiohttp.ClientSession() as session:
+            response = await session.get(
+                iframe_source,  # type: ignore
+                headers={"Referer": url},
+            )
+            text = await response.text()
+            x = re.findall(r"file:\"([^\"]+)", text)
 
-        await page.close()
-
-        if len(x) > 0:
-            return x[0]
+            await session.close()
+            await page.close()
+            if len(x) > 0:
+                return x[0]
 
     async def _get_home(self) -> GetHomeResults:
-        page = await self.browser.get("https://dizipal735.com")
+        browser = await init_browser()
+        page = await browser.get("https://dizipal735.com")
         await page.wait_for(".user-menu")
 
         trends = await self._fetch_home_trends(page)
@@ -146,7 +148,7 @@ class Dizipal:
                     href=episode.attrs.get("href"),
                     image=_image.attrs.get("src"),  # type: ignore
                     name=f"{_name.text.strip()} - {_episode.text.strip()}",  # type: ignore
-                    provider=AvailableProviders.DIZIPAL,
+                    desc=_name.text.strip(),  # type: ignore
                 )
             )
 

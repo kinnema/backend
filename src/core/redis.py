@@ -31,7 +31,7 @@ class RedisProvider:
     @staticmethod
     def get(key: REDIS_KEYS | str, model: Type[T]) -> Optional[T]:
         cached = redisClient.get((key.value if isinstance(key, REDIS_KEYS) else key))
-        print(cached)
+
         if cached is None:
             return None
 

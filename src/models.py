@@ -1,25 +1,15 @@
-from typing import List
+from typing import Dict, List, Optional
 
+from odmantic import Model
 from pydantic import BaseModel
-from sqlmodel import Field, SQLModel
-
-from src.providers import AvailableProviders
 
 
-class SerieBase(SQLModel):
+class SerieBase(BaseModel):
     name: str
+    desc: str
     image: str
     href: str
-    provider: AvailableProviders
-
-
-class SerieCreate(SerieBase):
-    pass
-
-
-class Serie(SerieBase, table=True):
-    id: int | None = Field(default=None, primary_key=True)
-    collection: str
+    video_url: Optional[str] = None
 
 
 class SerieResults(BaseModel):
@@ -48,7 +38,17 @@ class SerieMetadata(BaseModel):
     image: str
 
 
+class SeriePageEpisode(BaseModel):
+    episodes: Dict[int, List[SerieBase]]
+
+
 class GetSeriePage(BaseModel):
-    episodes: List[SerieBase]
+    episodes: SeriePageEpisode
+    seasons: List[str]
+    metadata: SerieMetadata
+
+
+class SeriePageModel(Model):
+    episodes: SeriePageEpisode
     seasons: List[str]
     metadata: SerieMetadata
