@@ -2,6 +2,7 @@ from typing import Union
 
 from fastapi import APIRouter, HTTPException
 
+from src.deps import SessionDep
 from src.models import (
     GetHomeResults,
     GetSeriePage,
@@ -54,8 +55,10 @@ async def search(query: str, provider: Union[str, None] = None):
 
 
 @router.get("/watch/{dizi}/{sezon}/{bolum}")
-async def get_serie(dizi: str, sezon: int, bolum: int) -> GetSerieResult:
-    url = await Dizipal().get_dizi(dizi, sezon, bolum)
+async def get_serie(
+    dizi: str, sezon: int, bolum: int, session: SessionDep
+) -> GetSerieResult:
+    url = await Dizipal().get_dizi(dizi, sezon, bolum, session)
 
     if url is None:
         raise HTTPException(status_code=404, detail="Serie not found")

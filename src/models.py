@@ -4,6 +4,13 @@ from odmantic import Model
 from pydantic import BaseModel
 
 
+class SerieWatch(Model):
+    serie: str
+    season: int
+    episode: int
+    watch_url: str
+
+
 class SerieBase(BaseModel):
     name: str
     desc: str

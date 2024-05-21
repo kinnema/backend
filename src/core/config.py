@@ -18,6 +18,8 @@ class Settings(BaseSettings):
 
     MONGODB_URL: str = "mongodb://root:example@db:27017"
 
+    CORS_ORIGINS: list[str]
+
     @computed_field  # type: ignore[misc]
     @property
     def REDIS_URI(self) -> str:
