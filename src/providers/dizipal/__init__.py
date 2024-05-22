@@ -3,14 +3,16 @@ from asyncio import sleep
 from typing import List, Optional
 
 import aiohttp
+from fastapi import HTTPException
 from nodriver import Browser, Tab
 from odmantic import AIOEngine
+from redis import Redis
 
 from src.core.browser import init_browser
 from src.core.database import mongoEngine
 from src.core.redis import REDIS_KEYS, RedisProvider
 from src.deps import SessionDep
-from src.models import GetHomeResults, HomeTrends, SerieBase, SerieWatch
+from src.models import GetHomeResults, GetSerieResult, HomeTrends, SerieBase, SerieWatch
 from src.providers import AvailableProviders
 from src.providers.dizipal.serie_page import DizipalSeriePage
 
@@ -64,18 +66,27 @@ class Dizipal:
         return series
 
     async def get_dizi(self, dizi, sezon, bolum, session: AIOEngine) -> Optional[str]:
-        fromDatabase = await mongoEngine.find_one(
-            SerieWatch, {"serie": dizi, "season": sezon, "episode": bolum}
-        )  # type: ignore
+        fromDatabase = RedisProvider.get(
+            f"episode-watch:{dizi}:{sezon}:{bolum}", GetSerieResult
+        )
+        # fromDatabase = await mongoEngine.find_one(
+        #     SerieWatch, {"serie": dizi, "season": sezon, "episode": bolum}
+        # )  # type: ignore
 
         if fromDatabase is not None:
-            return fromDatabase.watch_url
+            return fromDatabase.url
 
         url = await self._get_dizi(dizi, sezon, bolum)
 
-        await session.save(
-            SerieWatch(watch_url=url, serie=dizi, season=sezon, episode=bolum)  # type: ignore
+        if url is None:
+            raise HTTPException(status_code=404, detail="Serie not found")
+
+        RedisProvider.set(
+            f"episode-watch:{dizi}:{sezon}:{bolum}", GetSerieResult(url=url)
         )
+        # await session.save(
+        #     SerieWatch(watch_url=url, serie=dizi, season=sezon, episode=bolum)  # type: ignore
+        # )
 
         return url
 
