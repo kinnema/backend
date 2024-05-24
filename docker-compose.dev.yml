@@ -10,6 +10,7 @@ services:
     depends_on:
       - db
       - redis
+      - postgres
     env_file:
       - .env
 
@@ -22,6 +23,19 @@ services:
     ports:
       - 27017:27017
 
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: kinnema
+      POSTGRES_DB: kinnema
+      POSTGRES_PASSWORD: kinnema
+    ports:
+      - 5432:5432
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
   redis:
     image: redis
     restart: always

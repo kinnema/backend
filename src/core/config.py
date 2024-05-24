@@ -16,6 +16,13 @@ class Settings(BaseSettings):
     REDIS_PASSWORD: Optional[str] = ""
     REDIS_USER: Optional[str] = ""
 
+    POSTGRES_HOST: str = "postgres"
+    POSTGRES_PASSWORD:str = "kinnema"
+    POSTGRES_USER:str = "kinnema"
+    POSTGRES_DB: str = "kinnema"
+    POSTGRES_PORT: int = 5432
+
+
     MONGODB_URL: str = "mongodb://root:example@db:27017"
 
     CORS_ORIGINS: list[str]

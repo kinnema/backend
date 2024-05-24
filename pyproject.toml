@@ -14,11 +14,15 @@ pydantic-settings = "^2.2.1"
 redis = "^5.0.4"
 odmantic = "^1.0.2"
 aiohttp = "^3.9.5"
+alembic = "^1.13.1"
+sqlalchemy = "^2.0.30"
+sqlmodel = "^0.0.18"
 
 
 [tool.poetry.group.dev.dependencies]
 setuptools = "^69.5.1"
 autopep8 = "^2.1.0"
+psycopg = "^3.1.19"
 
 [build-system]
 requires = ["poetry-core"]
