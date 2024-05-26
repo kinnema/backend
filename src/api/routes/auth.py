@@ -8,7 +8,7 @@ from src import crud
 from src.api.deps import CurrentUser, SessionDep
 from src.core.config import settings
 from src.core.security import create_access_token
-from src.schemas import Token, User, UserCreate, UserPublic
+from src.schemas import Token, User, UserCreate, UserPublic, LoginResponse
 
 router = APIRouter()
 
@@ -23,7 +23,7 @@ async def register(*, session: SessionDep, user: UserCreate):
 
 
 @router.post("/login", )
-async def login(*, session: SessionDep, form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
+async def login(*, session: SessionDep, form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> LoginResponse:
     user = await crud.authenticate(session=session, email=form_data.username, password=form_data.password)
 
     if not user:
@@ -33,10 +33,11 @@ async def login(*, session: SessionDep, form_data: Annotated[OAuth2PasswordReque
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
 
 
-    return Token(
+    return LoginResponse(
         access_token=create_access_token(
             user.id, expires_delta=access_token_expires
-        )
+        ),
+        user=UserPublic.from_orm(user),
     )
 
 @router.get("/me", response_model=UserPublic)
