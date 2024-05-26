@@ -1,18 +1,18 @@
 services:
-#  web:
-#    build: ./
-#    command: "poetry run -- fastapi dev src/main.py --host 0.0.0.0 --reload"
-#    ports:
-#      - 8000:8000
-#    working_dir: /code
-#    volumes:
-#      - .:/code
-#    depends_on:
-#      - db
-#      - redis
-#      - postgres
-#    env_file:
-#      - .env
+  #  web:
+  #    build: ./
+  #    command: "poetry run -- fastapi dev src/main.py --host 0.0.0.0 --reload"
+  #    ports:
+  #      - 8000:8000
+  #    working_dir: /code
+  #    volumes:
+  #      - .:/code
+  #    depends_on:
+  #      - db
+  #      - redis
+  #      - postgres
+  #    env_file:
+  #      - .env
 
   db:
     image: mongo
@@ -32,6 +32,7 @@ services:
       POSTGRES_PASSWORD: kinnema
     ports:
       - 5432:5432
+
   adminer:
     image: adminer
     ports:
