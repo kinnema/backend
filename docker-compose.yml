@@ -1,7 +1,7 @@
 services:
   web:
     build: ./
-    command: "poetry run -- fastapi run src/main.py --host 0.0.0.0"
+    command: "uvicorn src.main:app --host 0.0.0.0"
     ports:
       - 80:8000
     working_dir: /code
@@ -23,3 +23,13 @@ services:
   redis:
     image: redis
     restart: always
+
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: kinnema
+      POSTGRES_DB: kinnema
+      POSTGRES_PASSWORD: kinnema
+    ports:
+      - 5432:5432
