@@ -17,6 +17,8 @@ aiohttp = "^3.9.5"
 alembic = "^1.13.1"
 sqlalchemy = "^2.0.30"
 sqlmodel = "^0.0.18"
+asyncpg = "^0.29.0"
+pwdlib = {extras = ["argon2", "bcrypt"], version = "^0.2.0"}
 
 
 [tool.poetry.group.dev.dependencies]

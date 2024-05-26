@@ -8,11 +8,11 @@ from nodriver import Browser, Tab
 from odmantic import AIOEngine
 from redis import Redis
 
+from src.api.deps import SessionDep
 from src.core.browser import init_browser
-from src.core.database import mongoEngine
 from src.core.redis import REDIS_KEYS, RedisProvider
-from src.deps import SessionDep
-from src.models import GetHomeResults, GetSerieResult, HomeTrends, SerieBase, SerieWatch
+from src.models import (GetHomeResults, GetSerieResult, HomeTrends, SerieBase,
+                        SerieWatch)
 from src.providers import AvailableProviders
 from src.providers.dizipal.serie_page import DizipalSeriePage
 

@@ -2,12 +2,8 @@ from typing import Union
 
 from fastapi import APIRouter, HTTPException
 
-from src.deps import SessionDep
-from src.models import (
-    GetHomeResults,
-    GetSeriePage,
-    GetSerieResult,
-)
+from src.api.deps import SessionDep
+from src.models import GetHomeResults, GetSeriePage, GetSerieResult
 from src.providers.dizipal import Dizipal
 
 router = APIRouter()

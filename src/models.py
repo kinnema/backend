@@ -61,17 +61,5 @@ class SeriePageModel(Model):
     seasons: List[str]
     metadata: SerieMetadata
 
-
-class UserBase(SQLModel):
-    username: str = Field(unique=True, index=True)
-    email: str = Field(unique=True, index=True)
-    is_active: bool = True
-    is_superuser: bool = False
-    full_name: str | None = None
-
-
-class User(UserBase, table=True):
-    id: int | None = Field(default=None, primary_key=True)
-    hashed_password: str
-    items: list["Item"] = Relationship(back_populates="owner")
-
+class TokenPayload(SQLModel):
+    sub: int | None = None

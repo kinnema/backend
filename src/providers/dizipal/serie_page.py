@@ -4,15 +4,9 @@ from typing import Dict, List
 from nodriver import Tab
 
 from src.core.browser import init_browser
-from src.core.database import mongoEngine
 from src.core.redis import REDIS_KEYS, RedisProvider
-from src.models import (
-    GetSeriePage,
-    SerieBase,
-    SerieMetadata,
-    SeriePageEpisode,
-    SeriePageModel,
-)
+from src.models import (GetSeriePage, SerieBase, SerieMetadata,
+                        SeriePageEpisode, SeriePageModel)
 
 
 class DizipalSeriePage:
@@ -84,9 +78,5 @@ class DizipalSeriePage:
         data = GetSeriePage(episodes=episodes, seasons=seasons, metadata=metadata)
 
         RedisProvider.set(REDIS_KEYS.SERIE.value.format(serie=serie), data)
-
-        await mongoEngine.save(
-            SeriePageModel(episodes=episodes, seasons=seasons, metadata=metadata)  # type: ignore
-        )
 
         return data
