@@ -5,8 +5,7 @@ from nodriver import Tab
 
 from src.core.browser import init_browser
 from src.core.redis import REDIS_KEYS, RedisProvider
-from src.models import (GetSeriePage, SerieBase, SerieMetadata,
-                        SeriePageEpisode, SeriePageModel)
+from src.models import GetSeriePage, SerieBase, SerieMetadata, SeriePageEpisode
 
 
 class DizipalSeriePage:
@@ -66,7 +65,7 @@ class DizipalSeriePage:
 
     async def _get_serie_page(self, serie: str) -> GetSeriePage:
         browser = await init_browser()
-        page = await browser.get(f"https://dizipal735.com/dizi/{serie}")
+        page = await browser.get(f"https://dizipal736.com/dizi/{serie}")
         await page.wait_for(".user-menu")
 
         metadata = await self._get_metadata(page)

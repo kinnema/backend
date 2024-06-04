@@ -11,8 +11,7 @@ from redis import Redis
 from src.api.deps import SessionDep
 from src.core.browser import init_browser
 from src.core.redis import REDIS_KEYS, RedisProvider
-from src.models import (GetHomeResults, GetSerieResult, HomeTrends, SerieBase,
-                        SerieWatch)
+from src.models import GetHomeResults, GetSerieResult, HomeTrends, SerieBase, SerieWatch
 from src.providers import AvailableProviders
 from src.providers.dizipal.serie_page import DizipalSeriePage
 
@@ -43,7 +42,7 @@ class Dizipal:
         series: List[SerieBase] = []
         browser = await init_browser()
 
-        page = await browser.get(f"https://dizipal735.com/diziler?kelime={query}")
+        page = await browser.get(f"https://dizipal736.com/diziler?kelime={query}")
         await page.wait_for(".type2")
         all_series = await page.query_selector_all(".type2 ul li a")
 
@@ -92,7 +91,7 @@ class Dizipal:
 
     async def _get_dizi(self, dizi, sezon, bolum) -> Optional[str]:
         browser = await init_browser()
-        url = f"https://dizipal735.com/dizi/{dizi}/sezon-{sezon}/bolum-{bolum}"
+        url = f"https://dizipal736.com/dizi/{dizi}/sezon-{sezon}/bolum-{bolum}"
         page = await browser.get(url)
 
         await page.wait_for(".user-menu")
@@ -116,7 +115,7 @@ class Dizipal:
 
     async def _get_home(self) -> GetHomeResults:
         browser = await init_browser()
-        page = await browser.get("https://dizipal735.com")
+        page = await browser.get("https://dizipal736.com")
         await page.wait_for(".user-menu")
 
         trends = await self._fetch_home_trends(page)
