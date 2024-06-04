@@ -1,35 +1,11 @@
 services:
-  web:
-    build: ./
-    command: "poetry run -- uvicorn src.main:app  --host 0.0.0.0"
-    ports:
-      - 80:8000
-    working_dir: /code
-    volumes:
-      - .:/code
-    depends_on:
-      - db
-      - redis
-    env_file:
-      - .env
-
-  db:
-    image: mongo
-    restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
-
-  redis:
-    image: redis
-    restart: always
-
-  postgres:
+  database:
     image: postgres
-    restart: always
-    environment:
-      POSTGRES_USER: kinnema
-      POSTGRES_DB: kinnema
-      POSTGRES_PASSWORD: kinnema
     ports:
-      - 5432:5432
+      - 5432
+    environment:
+      - POSTGRES_USER=kinnema
+      - POSTGRES_PASSWORD=kinnema
+      - POSTGRES_DB=kinnema
+    volumes:
+      - ./tmp/db:/var/lib/postgresql/data
