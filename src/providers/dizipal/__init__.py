@@ -108,6 +108,8 @@ class Dizipal:
 
             await session.close()
             await page.close()
+            browser.stop()
+
             if len(x) > 0:
                 url = x[0]
 
