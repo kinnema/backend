@@ -16,17 +16,15 @@ class Settings(BaseSettings):
     REDIS_USER: Optional[str] = ""
 
     POSTGRES_HOST: str = "postgres"
-    POSTGRES_PASSWORD:str = "kinnema"
-    POSTGRES_USER:str = "kinnema"
+    POSTGRES_PASSWORD: str = "kinnema"
+    POSTGRES_USER: str = "kinnema"
     POSTGRES_DB: str = "kinnema"
     POSTGRES_PORT: int = 5432
 
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
     SECRET_KEY: str = "key"
 
-    MONGODB_URL: str = "mongodb://root:example@db:27017"
-
-    CORS_ORIGINS: list[str]
+    CORS_ORIGINS: list[str] = ["*"]
 
     @computed_field  # type: ignore[misc]
     @property
@@ -56,4 +54,6 @@ class Settings(BaseSettings):
             port=self.POSTGRES_PORT,
             path=self.POSTGRES_DB,
         )
+
+
 settings = Settings()  # type: ignore

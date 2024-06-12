@@ -68,9 +68,6 @@ class Dizipal:
         fromDatabase = RedisProvider.get(
             f"episode-watch:{dizi}:{sezon}:{bolum}", GetSerieResult
         )
-        # fromDatabase = await mongoEngine.find_one(
-        #     SerieWatch, {"serie": dizi, "season": sezon, "episode": bolum}
-        # )  # type: ignore
 
         if fromDatabase is not None:
             return fromDatabase.url
@@ -83,9 +80,6 @@ class Dizipal:
         RedisProvider.set(
             f"episode-watch:{dizi}:{sezon}:{bolum}", GetSerieResult(url=url)
         )
-        # await session.save(
-        #     SerieWatch(watch_url=url, serie=dizi, season=sezon, episode=bolum)  # type: ignore
-        # )
 
         return url
 
