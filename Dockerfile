@@ -1,4 +1,6 @@
-FROM python:latest
+FROM ultrafunk/undetected-chromedriver:latest
+
+RUN apt update -y && apt install google-chrome-stable -y
 
 RUN pip install poetry
 

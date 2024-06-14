@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 
 from src.models import GetSerieResult
-from src.providers.dizipal.dizipal import Dizipal
+from src.providers.dizipal import Dizipal
 
 router = APIRouter()
 
