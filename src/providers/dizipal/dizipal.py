@@ -4,7 +4,7 @@ from typing import Optional
 import aiohttp
 from fastapi import HTTPException
 
-import src.core.browser as b
+from src.core.browser import browser
 from src.core.redis import RedisProvider
 from src.models import GetSerieResult
 
@@ -37,7 +37,7 @@ class Dizipal:
     async def _get_dizi(self, dizi, sezon, bolum) -> Optional[str]:
         try:
             url = f"https://dizipal736.com/dizi/{dizi}/sezon-{sezon}/bolum-{bolum}"
-            page = await b.browser.get(url, True)
+            page = await browser.browser.get(url, True)
 
             await page.wait_for(".container")
             iframe = await page.query_selector("div#vast_new iframe")
