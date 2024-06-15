@@ -29,6 +29,8 @@ class Settings(BaseSettings):
 
     CORS_ORIGINS: list[str] = ["*"]
 
+    BROWSER_IDLE_TIMEOUT_IN_MINUTES: float = 10
+
     @computed_field  # type: ignore[misc]
     @property
     def REDIS_URI(self) -> str:
