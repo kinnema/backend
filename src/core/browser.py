@@ -37,7 +37,9 @@ class Browser:
                 print("Last request expired")
 
     def start_background_task(self):
-        timer = RepeatTimer(1, self._background_task)
+        timer = RepeatTimer(
+            settings.BROWSER_CHECK_IDLE_TIMEOUT_IN_SECONDS, self._background_task
+        )
         timer.start()
 
         self.last_request_thread = timer

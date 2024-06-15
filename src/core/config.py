@@ -30,6 +30,7 @@ class Settings(BaseSettings):
     CORS_ORIGINS: list[str] = ["*"]
 
     BROWSER_IDLE_TIMEOUT_IN_MINUTES: float = 10
+    BROWSER_CHECK_IDLE_TIMEOUT_IN_SECONDS: float = 60
 
     @computed_field  # type: ignore[misc]
     @property
