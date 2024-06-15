@@ -7,7 +7,6 @@ from pydantic import BaseModel
 from typing_extensions import TypeVar
 
 from src.core.config import settings
-from src.models import GetHomeResults
 
 redisClient = redis.Redis(
     host=settings.REDIS_HOST,
@@ -20,7 +19,6 @@ redisClient = redis.Redis(
 
 
 class REDIS_KEYS(Enum):
-    HOME = "home"
     SERIE = "serie:{serie}"
 
 
@@ -44,17 +42,3 @@ class RedisProvider:
 
         if expire:
             redisClient.expire(k, expire)
-
-
-def set_home(data: GetHomeResults):
-    redisClient.set("home", data.model_dump_json())
-    redisClient.expire("home", 60 * 60 * 24)
-
-
-# def get_serie_page(serie: str) -> Optional[GetHomeResults]:
-#     cached = r.get(f"serie:{serie}")
-
-#     if cached is None:
-#         return None
-
-#     return GetHomeResults(**json.loads(cached))  # type: ignore
