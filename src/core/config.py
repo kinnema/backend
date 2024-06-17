@@ -32,6 +32,8 @@ class Settings(BaseSettings):
     BROWSER_IDLE_TIMEOUT_IN_MINUTES: float = 10
     BROWSER_CHECK_IDLE_TIMEOUT_IN_SECONDS: float = 60
 
+    PROVIDER_URL: str
+
     @computed_field  # type: ignore[misc]
     @property
     def REDIS_URI(self) -> str:
