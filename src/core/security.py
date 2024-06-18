@@ -1,4 +1,4 @@
-from datetime import UTC, datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 import jwt
@@ -8,21 +8,26 @@ from pwdlib.hashers.bcrypt import BcryptHasher
 
 from src.core.config import settings
 
-password_hash = PasswordHash((
-    Argon2Hasher(),
-    BcryptHasher(),
-))
+password_hash = PasswordHash(
+    (
+        Argon2Hasher(),
+        BcryptHasher(),
+    )
+)
 
 ALGORITHM = "HS256"
 
+
 def hash_password(password: str) -> str:
     return password_hash.hash(password)
+
 
 def verify_password(password: str, hashed_password: str) -> bool:
     try:
         return password_hash.verify(password, hashed_password)
     except exceptions.PwdlibError:
         return False
+
 
 def create_access_token(subject: str | Any, expires_delta: timedelta) -> str:
     expire = datetime.now(UTC) + expires_delta
