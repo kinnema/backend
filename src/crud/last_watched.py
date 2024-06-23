@@ -23,6 +23,20 @@ class LastWatchedCrud:
     ):
         last_watched_query = select(LastWatched).where(
             LastWatched.user_id == current_user.id,
+            LastWatched.tmdb_id == tmdb_id,
+            LastWatched.is_watched == False,  # noqa: E712
+        )
+        last_watched = await session.exec(last_watched_query)
+
+        return last_watched.first()
+
+    @staticmethod
+    async def _get_single_last_watched_by_id(
+        *, session: AsyncSession, current_user: CurrentUser, id: int
+    ):
+        last_watched_query = select(LastWatched).where(
+            LastWatched.id == id,
+            LastWatched.user_id == current_user.id,
             LastWatched.is_watched == False,  # noqa: E712
         )
         last_watched = await session.exec(last_watched_query)
@@ -60,14 +74,9 @@ class LastWatchedCrud:
         current_user: CurrentUser,
         id: int,
     ):
-        last_watched_query = select(LastWatched).where(
-            LastWatched.id == id,
-            LastWatched.user_id == current_user.id,
-            LastWatched.is_watched == False,  # noqa: E712
+        last_watched = await LastWatchedCrud._get_single_last_watched_by_id(
+            current_user=current_user, id=id, session=session
         )
-        last_watched = await session.exec(last_watched_query)
-
-        last_watched = last_watched.first()
 
         if last_watched:
             last_watched.is_watched = True
