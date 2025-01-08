@@ -38,7 +38,6 @@ async def last_request_expire(request: fastapi.Request, call_next):
 @app.middleware("http")
 async def check_browser(request: fastapi.Request, call_next):
     if browser.browser.stopped:
-        print("create_browser")
         await browser.init_browser()
 
     response = await call_next(request)
