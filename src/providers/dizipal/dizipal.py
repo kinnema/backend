@@ -40,7 +40,7 @@ class Dizipal:
             url = f"{settings.PROVIDER_URL}/dizi/{dizi}/sezon-{sezon}/bolum-{bolum}"
             page = await browser.browser.get(url, True)
 
-            await page.wait_for(".container", timeout=2)
+            await page.wait_for(".container")
             iframe = await page.query_selector("div#vast_new iframe")
             iframe_source = iframe.attrs.get("src")  # type: ignore
 
