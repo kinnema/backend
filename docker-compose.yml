@@ -1,7 +1,7 @@
 services:
   web:
     build: ./
-    command: "poetry run alembic upgrade head && poetry run -- uvicorn src.main:app  --host 0.0.0.0"
+    command: "poetry run -- uvicorn src.main:app  --host 0.0.0.0"
     ports:
       - 8123:8000
     working_dir: /code
@@ -10,9 +10,20 @@ services:
     depends_on:
       - redis
       - postgres
+      - migration
     env_file:
       - .env
-
+  migration:
+    build: ./
+    command: "poetry run alembic upgrade head"
+    working_dir: /code
+    volumes:
+      - .:/code
+    depends_on:
+      - redis
+      - postgres
+    env_file:
+      - .env
   redis:
     image: redis
     restart: always
