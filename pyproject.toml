@@ -4,24 +4,26 @@ version = "0.1.0"
 description = ""
 authors = ["Muhammed Kaplan <mmuhammedkaplan0@gmail.com>"]
 readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.11"
 undetected-chromedriver = "^3.5.5"
-nodriver = "^0.29rc2"
-fastapi = "^0.111.0"
-pydantic-settings = "^2.2.1"
+nodriver = "^0.38.post1"
+fastapi = "^0.115.6"
+pydantic-settings = "^2.7.1"
 redis = "^5.0.4"
 odmantic = "^1.0.2"
-aiohttp = "^3.9.5"
+aiohttp = "^3.11.11"
 alembic = "^1.13.1"
 sqlalchemy = "^2.0.30"
 sqlmodel = "^0.0.18"
-asyncpg = "^0.29.0"
-pwdlib = {extras = ["argon2", "bcrypt"], version = "^0.2.0"}
+asyncpg = "^0.30.0"
+pwdlib = {extras = ["argon2", "bcrypt"], version = "^0.2.1"}
 uvicorn = "^0.29.0"
 pyjwt = "^2.8.0"
 psycopg = {extras = ["binary"], version = "^3.1.19"}
+greenlet = "^3.1.1"
 
 
 [tool.poetry.group.dev.dependencies]
