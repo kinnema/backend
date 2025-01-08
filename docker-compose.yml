@@ -1,7 +1,7 @@
 services:
   web:
     build: ./
-    command: "poetry run -- uvicorn src.main:app  --host 0.0.0.0"
+    command: "poetry run alembic upgrade head && poetry run -- uvicorn src.main:app  --host 0.0.0.0"
     ports:
       - 8123:8000
     working_dir: /code
@@ -9,6 +9,7 @@ services:
       - .:/code
     depends_on:
       - redis
+      - postgres
     env_file:
       - .env
 

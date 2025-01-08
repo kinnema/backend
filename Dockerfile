@@ -9,5 +9,3 @@ WORKDIR /code
 COPY . /code
 
 RUN poetry install
-
-RUN poetry run alembic upgrade head
