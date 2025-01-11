@@ -4,7 +4,7 @@ from typing import Optional
 
 import nodriver as uc
 
-from src.core.config import ROOT_DIR, settings
+from src.core.config import settings, ROOT_DIR
 from src.helpers.repeated_timer import RepeatTimer
 
 
@@ -15,6 +15,8 @@ class Browser:
 
     async def init_browser(self):
         config = uc.Config()
+        config.autodiscover_targets = True
+        # config.
         config.add_extension(os.path.join(ROOT_DIR, "extensions", "ublock.crx"))
         config.add_extension(os.path.join(ROOT_DIR, "extensions", "image-blocker.crx"))
 
