@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC, ABCMeta, abstractmethod
 from enum import Enum
 from typing import Optional
 
@@ -9,8 +9,13 @@ class Priority(str, Enum):
     HIGH = 0
 
 
-class BaseProvider(ABC):
+class BaseProvider(metaclass=ABCMeta):
 
+    @property
+    @abstractmethod
+    def ENABLED(self) -> bool:
+        return True
+    
     @property
     @abstractmethod
     def NAME(self) -> str:

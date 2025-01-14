@@ -137,3 +137,8 @@ class HdFilmCehennemiProvider(BaseProvider):
             hash = splitted_source[1]
 
             return hash
+
+    @property
+    def ENABLED(self) -> bool:
+        return False
+

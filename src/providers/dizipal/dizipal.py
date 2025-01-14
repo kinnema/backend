@@ -81,3 +81,8 @@ class Dizipal(BaseProvider):
     @property
     def REQUIRES_BROWSER(self) -> bool:
         return True
+
+    @property
+    def ENABLED(self) -> bool:
+        return False
+
