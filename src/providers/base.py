@@ -1,6 +1,6 @@
 from abc import ABC, ABCMeta, abstractmethod
 from enum import Enum
-from typing import Optional
+from typing import Awaitable, Optional
 
 
 class Priority(str, Enum):
@@ -32,5 +32,5 @@ class BaseProvider(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_dizi(self, dizi: str, sezon: int, bolum: int) -> Optional[str]:
+    def get_dizi(self, dizi: str, sezon: int, bolum: int) -> Awaitable[Optional[str]]:
         pass
