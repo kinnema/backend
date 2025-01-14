@@ -1,4 +1,3 @@
-from typing import Optional
 from pydantic import BaseModel
 from sqlmodel import SQLModel
 
@@ -6,8 +5,7 @@ from src.schemas import LastWachedBase
 
 
 class GetSerieResult(BaseModel):
-    url: Optional[str]
-    error: Optional[str]
+    url: str
 
 
 class TokenPayload(SQLModel):
