@@ -1,4 +1,5 @@
 import asyncio
+from csv import Error
 import json
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
@@ -9,15 +10,15 @@ from src.providers import available_providers
 
 router = APIRouter()
 
-async def fetch_serie_from_providers(serie_name: str, season: int, episode: int):
+async def fetch_serie_from_providers(serie_name: str, season: int, episode: int) -> GetSerieResult:
+    data = GetSerieResult(url=None, error=None)
     fromDatabase = RedisProvider.get(
         f"episode-watch:{serie_name}:{season}:{episode}", GetSerieResult
     )
 
     if fromDatabase is not None:
-        data = json.dumps({'url': fromDatabase.url})
-        yield f"{data}\n"
-        return
+        data = GetSerieResult(url=fromDatabase.url, error=None)
+        return data
 
     providers = available_providers.get_providers()
     tasks = [provider.get_dizi(serie_name, season, episode) for provider in providers]
@@ -28,10 +29,9 @@ async def fetch_serie_from_providers(serie_name: str, season: int, episode: int)
             url = await asyncio.wait_for(task, timeout=5)
             if url:
                 RedisProvider.set(
-                    f"episode-watch:{serie_name}:{season}:{episode}", GetSerieResult(url=url)
+                    f"episode-watch:{serie_name}:{season}:{episode}", GetSerieResult(url=url, error=None)
                 )
-                data = json.dumps({'url': url})
-                yield f"{data}\n"
+                data = GetSerieResult(url=url, error=None)
                 found_url = True
                 break
         except asyncio.TimeoutError:
@@ -40,13 +40,14 @@ async def fetch_serie_from_providers(serie_name: str, season: int, episode: int)
             print(f"Error fetching from provider: {e}")
 
     if not found_url:
-        yield f"{json.dumps({'error': 'No URL found for the requested episode'})}\n"
+        return GetSerieResult(url=None, error='No URL found for the requested episode')
+    
+    return data
 
 
 @router.get("/watch")
-async def get_serie(serie_name: str, season: int, episode: int):
+async def get_serie(serie_name: str, season: int, episode: int) -> GetSerieResult:
     serie_name = serie_name.lower()
-    return StreamingResponse(
-        content=fetch_serie_from_providers(serie_name, season, episode),
-        media_type="application/json"
-    )
+    response = await fetch_serie_from_providers(serie_name, season, episode)
+    
+    return response
